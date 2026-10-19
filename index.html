@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hydraulik Wärmepumpe</title>
+<style>
+:root{--bg:#f6f5f1;--card:#fff;--ink:#1f1e1c;--mut:#5f5e5a;--line:#d3d1c7;--box:#f1efe8;--boxs:#888780;--acc:#185fa5;--accbg:#e6f1fb;
+ --hot:#d85a30;--warm:#ef9f27;--cold:#378add;--off:#b4b2a9;--hotbg:#faece7;--hotln:#993c1d;--ambg:#faeeda;--amln:#854f0b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1c1c1a;--card:#262624;--ink:#ecebe6;--mut:#b4b2a9;--line:#444441;--box:#2c2c2a;--boxs:#888780;--acc:#85b7eb;--accbg:#0c447c;
+ --hotbg:#4a1b0c;--hotln:#f0997b;--ambg:#412402;--amln:#fac775}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;line-height:1.55}
+main{max-width:860px;margin:0 auto;padding:20px 16px 40px}
+h1{font-size:24px;font-weight:600;margin:0 0 4px}h2{font-size:19px;font-weight:600;margin:28px 0 8px}
+.sub{color:var(--mut);margin:0 0 16px;font-size:15px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.sz{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+button{font:inherit;font-size:15px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+button[aria-pressed="true"]{background:var(--accbg);color:var(--acc);border-color:var(--acc)}
+svg{width:100%;height:auto;display:block}
+svg text{font-family:inherit;fill:var(--ink)}svg .ts{font-size:12px;fill:var(--mut)}svg .th{font-size:14px;font-weight:600}
+.bx{fill:var(--box);stroke:var(--boxs);stroke-width:.8}.bx.hot{fill:var(--hotbg);stroke:var(--hotln)}.bx.am{fill:var(--ambg);stroke:var(--amln)}
+.seg{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s,opacity .3s}
+.seg.off{stroke:var(--off);opacity:.4;stroke-dasharray:2 7}.seg.hot{stroke:var(--hot)}.seg.warm{stroke:var(--warm)}.seg.cold{stroke:var(--cold)}
+@media (prefers-reduced-motion:no-preference){.seg.flow{stroke-dasharray:10 8;animation:fl 1s linear infinite}}
+@keyframes fl{to{stroke-dashoffset:-18}}
+.cap{margin-top:8px;font-size:15px;color:var(--mut);min-height:3.2em}
+.leg{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--mut);margin-top:6px}
+.leg i{display:inline-block;width:22px;height:5px;border-radius:3px;vertical-align:middle;margin-right:5px}
+table{width:100%;border-collapse:collapse;font-size:14.5px}th,td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-weight:600}td:first-child{color:var(--mut);width:24%}
+.plus{color:#3b6d11}.minus{color:#a32d2d}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .plus{color:#97c459}:root:not([data-theme="light"]) .minus{color:#f09595}}
+.wrap{overflow-x:auto}
+footer{margin-top:28px;font-size:12px;color:var(--mut)}
+</style>
+</head>
+<body>
+<main>
+<h1>Hydraulik der Wärmepumpe</h1>
+<p class="sub">Samsung Mono R290 8 kW · 850-l-Kombispeicher in Reihe im Rücklauf · Szenario wählen, der aktive Wasserweg leuchtet auf.</p>
+
+<div class="card">
+<div class="sz" id="btns"></div>
+<svg viewBox="0 0 680 450" role="img" aria-label="Hydraulikschema der eigenen Anlage">
+<path id="s_vl" class="seg" d="M150 190 H206"/>
+<path id="s_hkvl" class="seg" d="M220 176 V70 H468"/>
+<path id="s_spvl" class="seg" d="M234 190 H386"/>
+<path id="s_bp" class="seg" d="M300 70 V180 M300 200 V392"/>
+<path id="s_hkrl" class="seg" d="M600 100 V362 H460 V336"/>
+<path id="s_sprl" class="seg" d="M420 336 V392 H300"/>
+<path id="s_rl" class="seg" d="M300 392 H95 V236"/>
+<rect id="wp" class="bx" x="40" y="150" width="110" height="86" rx="8"/>
+<text class="th" x="95" y="182" text-anchor="middle">Wärmepumpe</text>
+<text class="ts" id="wpst" x="95" y="206" text-anchor="middle">Verdichter aus</text>
+<rect class="bx" x="206" y="176" width="28" height="28" rx="4" transform="rotate(45 220 190)"/>
+<text class="ts" x="220" y="236" text-anchor="middle">3-Wege-Ventil</text>
+<text class="ts" id="vst" x="220" y="252" text-anchor="middle">–</text>
+<rect class="bx" x="468" y="40" width="172" height="60" rx="8"/>
+<text class="th" x="554" y="65" text-anchor="middle">Heizkörper</text>
+<text class="ts" x="554" y="85" text-anchor="middle">12 Thermostate + FBH Bad</text>
+<rect id="sp" class="bx" x="386" y="140" width="110" height="196" rx="18"/>
+<text class="th" x="441" y="168" text-anchor="middle">Speicher</text>
+<text class="ts" x="441" y="188" text-anchor="middle">850 l</text>
+<text class="ts" x="441" y="216" text-anchor="middle">oben warm</text>
+<text class="ts" x="441" y="308" text-anchor="middle">unten kühler</text>
+<circle class="bx" cx="200" cy="392" r="16"/>
+<text class="ts" x="200" y="430" text-anchor="middle">Pumpe</text>
+<rect class="bx" x="120" y="380" width="34" height="24" rx="4"/>
+<text class="ts" x="137" y="430" text-anchor="middle">SIKA</text>
+<rect class="bx" x="290" y="270" width="20" height="28" rx="3"/>
+<text class="ts" x="316" y="282">Überström-</text><text class="ts" x="316" y="298">ventil</text>
+<text class="ts" x="560" y="200">Rücklauf</text><text class="ts" x="560" y="216">Heizkörper</text>
+</svg>
+<div class="cap" id="cap"></div>
+<div class="leg"><span><i style="background:var(--hot)"></i>heiß aus der Wärmepumpe</span><span><i style="background:var(--warm)"></i>warm aus dem Speicher</span><span><i style="background:var(--cold)"></i>kühler Rücklauf</span><span><i style="background:var(--off);opacity:.5"></i>steht still</span></div>
+</div>
+
+<h2>Zum Vergleich: der „einfache“ Aufbau mit Pufferspeicher</h2>
+<p class="sub">So bauen viele Firmen: Der Puffer trennt Wärmepumpe und Heizkreis. Jede Seite hat ihre eigene Pumpe, im Puffer mischt sich das Wasser.</p>
+<div class="card">
+<svg viewBox="0 0 680 400" role="img" aria-label="Klassischer Aufbau mit Parallelpuffer">
+<path class="seg hot flow" d="M150 175 H286"/>
+<path class="seg cold flow" d="M286 300 H95 V240"/>
+<path class="seg warm flow" d="M404 160 H520 V104"/>
+<path class="seg cold flow" d="M610 104 V300 H404"/>
+<rect class="bx hot" x="40" y="135" width="110" height="100" rx="8"/>
+<text class="th" x="95" y="175" text-anchor="middle">Wärmepumpe</text>
+<text class="ts" x="95" y="197" text-anchor="middle">z. B. 37 °C</text>
+<rect class="bx am" x="290" y="120" width="110" height="210" rx="18"/>
+<text class="th" x="345" y="150" text-anchor="middle">Puffer</text>
+<text class="ts" x="345" y="172" text-anchor="middle">Wasser mischt</text>
+<text class="ts" x="345" y="190" text-anchor="middle">sich hier</text>
+<rect class="bx" x="470" y="40" width="170" height="60" rx="8"/>
+<text class="th" x="555" y="65" text-anchor="middle">Heizkörper</text>
+<text class="ts" x="555" y="85" text-anchor="middle">bekommen nur ~34 °C</text>
+<circle class="bx" cx="200" cy="300" r="16"/><text class="ts" x="200" y="338" text-anchor="middle">Pumpe 1</text>
+<circle class="bx" cx="460" cy="160" r="16"/><text class="ts" x="460" y="200" text-anchor="middle">Pumpe 2</text>
+<text class="ts" x="420" y="360">Zwei Kreise, zwei Pumpen, Mischverlust im Puffer</text>
+</svg>
+</div>
+
+<h2>Was ist bei Ihrem Aufbau besser – und was nicht?</h2>
+<div class="card wrap">
+<table>
+<tr><th></th><th>Ihre Anlage (Speicher in Reihe)</th><th>Klassisch (Parallelpuffer)</th></tr>
+<tr><td>Vorlauftemperatur</td><td class="plus">Die Heizkörper bekommen genau die Temperatur der Heizkurve.</td><td class="minus">Im Puffer mischt sich warmes mit kühlem Wasser. Die Wärmepumpe muss 2–3 K wärmer liefern, als die Räume brauchen. Das kostet etwa 5–8 % Arbeitszahl.</td></tr>
+<tr><td>Pumpen</td><td class="plus">Eine Pumpe.</td><td class="minus">Zwei Pumpen, die zweite läuft die ganze Heizsaison. Etwa 100–200 kWh Strom mehr im Jahr.</td></tr>
+<tr><td>Speicherwärme fürs Haus</td><td class="plus">Solar geladene Wärme im Speicher geht direkt in die Heizkörper („Heizen aus Speicher“).</td><td>Geht auch, ist aber ein getrennter Puffer. Das Warmwasser braucht meist einen eigenen Speicher.</td></tr>
+<tr><td>Abtauen, Mindestdurchfluss</td><td class="plus">Die 850 l liegen immer im Kreis. Zusammen mit dem Überströmventil ist immer genug Wasser da.</td><td class="plus">Sicher, weil der Puffer die Wärmepumpe von den Thermostaten trennt.</td></tr>
+<tr><td>Takten bei mildem Wetter</td><td class="minus">Sind die Thermostate zu, läuft das Wasser über das Überströmventil im kleinen Kreis. Die Wärmepumpe neigt zum Takten, gemildert mit FSV 1061 = 3.</td><td class="plus">Der Puffer schluckt Überschuss, die Wärmepumpe läuft gleichmäßiger.</td></tr>
+<tr><td>Reaktion</td><td class="minus">Träge: Die Wärmepumpe „sieht“ die Temperatur unten im Speicher, nicht den Rücklauf der Räume.</td><td>Ebenfalls träge, aber jede Seite für sich regelbar.</td></tr>
+</table>
+</div>
+
+<h2>Bauteile</h2>
+<div class="card" style="font-size:15px">
+<p style="margin:0 0 8px"><b>SIKA</b> ist der Herstellername (SIKA Dr. Siebert &amp; Kühn, Kaufungen). Das Bauteil ist ein <b>Durchflusssensor</b>. Er meldet der Samsung-Regelung, wie viel Wasser fließt. Fließen weniger als etwa 7 l/min, stoppt die Wärmepumpe mit Fehler E911.</p>
+<p style="margin:0 0 8px"><b>3-Wege-Ventil</b>: schickt das heiße Wasser entweder zu den Heizkörpern oder in den Speicher, nie gleichzeitig.</p>
+<p style="margin:0 0 8px"><b>Überströmventil</b>: öffnet, wenn die Thermostate fast zu sind, und sichert so den Mindestdurchfluss.</p>
+<p style="margin:0"><b>Pumpe</b>: wird von der Samsung-Regelung nach der Spreizung (Ziel etwa 5 K) zwischen 55 % und 100 % geregelt und läuft in Verdichterpausen durch (FSV 2093 = 3).</p>
+</div>
+<footer>Stand Oktober 2026 · vereinfachte Skizze, kein Installationsplan</footer>
+</main>
+<script>
+const S={
+"Heizen mit Wärmepumpe":{wp:"Verdichter an",wc:"hot",v:"auf Heizen",sp:"",seg:{s_vl:"hot flow",s_hkvl:"hot flow",s_hkrl:"cold flow",s_sprl:"cold flow",s_rl:"cold flow",s_bp:"cold",s_spvl:"off"},t:"Zone 1 an, der Speicher ist unten kühler als die Heizkurve: Der Verdichter heizt das Wasser. Es fließt zu den Heizkörpern, zurück durch den Speicher und wieder zur Wärmepumpe. Den Speicher wärmt es unten dabei mit."},
+"Heizen aus Speicher":{wp:"Verdichter aus",wc:"",v:"auf Heizen",sp:"am",seg:{s_vl:"warm flow",s_hkvl:"warm flow",s_hkrl:"cold flow",s_sprl:"warm flow",s_rl:"warm flow",s_bp:"warm",s_spvl:"off"},t:"Zone 1 an, der Speicher ist unten wärmer als die Heizkurve, zum Beispiel nach einer PV-Ladung: Der Verdichter bleibt aus. Die Pumpe läuft durch und bringt die Speicherwärme in die Heizkörper."},
+"Warmwasser laden":{wp:"Verdichter an",wc:"hot",v:"auf Speicher",sp:"am",seg:{s_vl:"hot flow",s_spvl:"hot flow",s_sprl:"cold flow",s_rl:"cold flow",s_hkvl:"off",s_hkrl:"off",s_bp:"off"},t:"Der Speicher liegt etwa 5 K unter seinem Soll (Sonne 56 °C, tagsüber 51 °C, nachts 48 °C): Das Ventil stellt auf Speicher. Heißes Wasser geht oben hinein, kühles kommt unten zurück. Die Heizkörper sind solange abgekoppelt."},
+"Thermostate zu":{wp:"Verdichter kurz an",wc:"hot",v:"auf Heizen",sp:"",seg:{s_vl:"hot flow",s_hkvl:"hot flow",s_bp:"hot flow",s_rl:"warm flow",s_hkrl:"off",s_sprl:"off",s_spvl:"off"},t:"Zone 1 ist an, aber die Ventile sind fast zu: Das Wasser nimmt den Weg über das Überströmventil, am Speicher vorbei zurück zur Pumpe. Der Mindestdurchfluss bleibt erhalten, aber die Wärmepumpe neigt hier zum Takten."},
+"Alles aus":{wp:"aus",wc:"",v:"–",sp:"am",seg:{s_vl:"off",s_hkvl:"off",s_hkrl:"off",s_sprl:"off",s_rl:"off",s_bp:"off",s_spvl:"off"},t:"Kein Raum braucht Wärme, und der Speicher ist warm genug: Nichts fließt. Der Speicher verliert etwa 0,2 K pro Stunde."}};
+const b=document.getElementById('btns');
+function show(n){const s=S[n];for(const [id,c] of Object.entries(s.seg))document.getElementById(id).setAttribute('class','seg '+c);
+document.getElementById('wp').setAttribute('class','bx '+s.wc);document.getElementById('wpst').textContent=s.wp;
+document.getElementById('vst').textContent=s.v;document.getElementById('sp').setAttribute('class','bx '+s.sp);
+document.getElementById('cap').textContent=s.t;b.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.textContent===n));}
+Object.keys(S).forEach(n=>{const x=document.createElement('button');x.textContent=n;x.onclick=()=>show(n);b.appendChild(x);});
+show("Heizen mit Wärmepumpe");
+</script>
+</body>
+</html>
