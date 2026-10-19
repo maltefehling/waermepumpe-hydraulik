@@ -77,6 +77,36 @@ footer{margin-top:28px;font-size:12px;color:var(--mut)}
 <div class="leg"><span><i style="background:var(--hot)"></i>heiß aus der Wärmepumpe</span><span><i style="background:var(--warm)"></i>warm aus dem Speicher</span><span><i style="background:var(--cold)"></i>kühler Rücklauf</span><span><i style="background:var(--off);opacity:.5"></i>steht still</span></div>
 </div>
 
+
+<h2>Wer steuert was</h2>
+<p class="sub">Die Samsung-Regelung kennt nur ihre eigenen Fühler. Was in den Räumen passiert, erfährt sie über Home Assistant und den ESP32-Adapter am Samsung-Bus.</p>
+<div class="card">
+<svg viewBox="0 0 680 350" role="img" aria-label="Steuerkette von den Thermostaten über Home Assistant und ESP32 zur Wärmepumpe">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<g fill="none" stroke="var(--boxs)" stroke-width="1.5">
+<path d="M125 86 V116" marker-end="url(#ar)"/><path d="M210 148 H246" marker-end="url(#ar)"/>
+<path d="M590 86 V150 H484" marker-end="url(#ar)"/><path d="M365 230 V266" marker-end="url(#ar)"/>
+<path d="M480 298 H516" marker-end="url(#ar)"/></g>
+<rect class="bx" x="40" y="30" width="170" height="56" rx="8"/><text class="th" x="125" y="54" text-anchor="middle">12 Thermostate</text><text class="ts" x="125" y="73" text-anchor="middle">Wochenprogramme im Gerät</text>
+<rect class="bx" x="40" y="120" width="170" height="56" rx="8"/><text class="th" x="125" y="144" text-anchor="middle">OpenCCU</text><text class="ts" x="125" y="163" text-anchor="middle">Funk-Zentrale</text>
+<rect class="bx" x="520" y="30" width="140" height="56" rx="8"/><text class="th" x="590" y="54" text-anchor="middle">FEMS</text><text class="ts" x="590" y="73" text-anchor="middle">PV, Akku, Netz</text>
+<rect class="bx am" x="250" y="110" width="230" height="120" rx="10"/><text class="th" x="365" y="136" text-anchor="middle">Home Assistant</text>
+<text class="ts" x="365" y="160" text-anchor="middle">zeichnet alles auf (30 Tage + Langzeit)</text>
+<text class="ts" x="365" y="180" text-anchor="middle">HEMS-Regel: Warmwasser-Soll nach Sonne</text>
+<text class="ts" x="365" y="200" text-anchor="middle">EMHASS: rechnet mit, schaltet noch nicht</text>
+<text class="ts" x="372" y="252">Ventile, Ist, Soll</text>
+<rect class="bx" x="250" y="270" width="230" height="56" rx="8"/><text class="th" x="365" y="293" text-anchor="middle">ESP32 am Samsung-Bus</text><text class="ts" x="365" y="312" text-anchor="middle">Bedarfssteuerung, Notbetrieb</text>
+<rect class="bx hot" x="520" y="270" width="140" height="56" rx="8"/><text class="th" x="590" y="293" text-anchor="middle">Samsung-Regler</text><text class="ts" x="590" y="312" text-anchor="middle">Heizkurve, Pumpe</text>
+<text class="ts" x="498" y="344" text-anchor="middle">Zone 1 an/aus, WW-Soll</text>
+</svg>
+<div style="font-size:15px;margin-top:6px">
+<p style="margin:0 0 8px"><b>Thermostate</b> regeln ihr Ventil selbst nach Wochenprogramm, auch ohne Home Assistant.</p>
+<p style="margin:0 0 8px"><b>ESP32</b> sieht über Home Assistant alle Ventile. Braucht ein Raum Wärme (Ventil ≥ 30 % seit 10 min, Raum nicht schon über Soll), schaltet er Zone 1 ein, sonst nach 10 min aus. Fällt Home Assistant aus, schaltet er nach 10 min auf Notbetrieb: Zone 1 an.</p>
+<p style="margin:0 0 8px"><b>Home Assistant</b> stellt den Warmwasser-Sollwert: 56 °C bei Sonne (Überschuss oder PV ≥ 1,5 kW mit passender Prognose), 51 °C tagsüber, 48 °C nachts.</p>
+<p style="margin:0 0 8px"><b>Samsung</b> entscheidet selbst über Verdichter, Pumpendrehzahl, 3-Wege-Ventil und Vorlauftemperatur (Heizkurve).</p>
+<p style="margin:0"><b>EMHASS</b> rechnet schon jeden Tag einen Plan aus PV-Prognose, Verbrauch und Akku, schaltet aber noch nichts. Scharf geschaltet wird es mit einem flexiblen Stromtarif. Dann kann es zum Beispiel Warmwasser und Heizung in günstige Stunden legen.</p>
+</div>
+</div>
 <h2>Zum Vergleich: der „einfache“ Aufbau mit Pufferspeicher</h2>
 <p class="sub">So bauen viele Firmen: Der Puffer trennt Wärmepumpe und Heizkreis. Jede Seite hat ihre eigene Pumpe, im Puffer mischt sich das Wasser.</p>
 <div class="card">
@@ -125,16 +155,16 @@ footer{margin-top:28px;font-size:12px;color:var(--mut)}
 </main>
 <script>
 const S={
-"Heizen mit Wärmepumpe":{wp:"Verdichter an",wc:"hot",v:"auf Heizen",sp:"",seg:{s_vl:"hot flow",s_hkvl:"hot flow",s_hkrl:"cold flow",s_sprl:"cold flow",s_rl:"cold flow",s_bp:"cold",s_spvl:"off"},t:"Zone 1 an, der Speicher ist unten kühler als die Heizkurve: Der Verdichter heizt das Wasser. Es fließt zu den Heizkörpern, zurück durch den Speicher und wieder zur Wärmepumpe. Den Speicher wärmt es unten dabei mit."},
-"Heizen aus Speicher":{wp:"Verdichter aus",wc:"",v:"auf Heizen",sp:"am",seg:{s_vl:"warm flow",s_hkvl:"warm flow",s_hkrl:"cold flow",s_sprl:"warm flow",s_rl:"warm flow",s_bp:"warm",s_spvl:"off"},t:"Zone 1 an, der Speicher ist unten wärmer als die Heizkurve, zum Beispiel nach einer PV-Ladung: Der Verdichter bleibt aus. Die Pumpe läuft durch und bringt die Speicherwärme in die Heizkörper."},
-"Warmwasser laden":{wp:"Verdichter an",wc:"hot",v:"auf Speicher",sp:"am",seg:{s_vl:"hot flow",s_spvl:"hot flow",s_sprl:"cold flow",s_rl:"cold flow",s_hkvl:"off",s_hkrl:"off",s_bp:"off"},t:"Der Speicher liegt etwa 5 K unter seinem Soll (Sonne 56 °C, tagsüber 51 °C, nachts 48 °C): Das Ventil stellt auf Speicher. Heißes Wasser geht oben hinein, kühles kommt unten zurück. Die Heizkörper sind solange abgekoppelt."},
-"Thermostate zu":{wp:"Verdichter kurz an",wc:"hot",v:"auf Heizen",sp:"",seg:{s_vl:"hot flow",s_hkvl:"hot flow",s_bp:"hot flow",s_rl:"warm flow",s_hkrl:"off",s_sprl:"off",s_spvl:"off"},t:"Zone 1 ist an, aber die Ventile sind fast zu: Das Wasser nimmt den Weg über das Überströmventil, am Speicher vorbei zurück zur Pumpe. Der Mindestdurchfluss bleibt erhalten, aber die Wärmepumpe neigt hier zum Takten."},
-"Alles aus":{wp:"aus",wc:"",v:"–",sp:"am",seg:{s_vl:"off",s_hkvl:"off",s_hkrl:"off",s_sprl:"off",s_rl:"off",s_bp:"off",s_spvl:"off"},t:"Kein Raum braucht Wärme, und der Speicher ist warm genug: Nichts fließt. Der Speicher verliert etwa 0,2 K pro Stunde."}};
+"Heizen mit Wärmepumpe":{wer:"Auslöser: ESP32 schaltet Zone 1 ein (ein Raum braucht Wärme), Samsung startet den Verdichter nach der Heizkurve.",wp:"Verdichter an",wc:"hot",v:"auf Heizen",sp:"",seg:{s_vl:"hot flow",s_hkvl:"hot flow",s_hkrl:"cold flow",s_sprl:"cold flow",s_rl:"cold flow",s_bp:"cold",s_spvl:"off"},t:"Zone 1 an, der Speicher ist unten kühler als die Heizkurve: Der Verdichter heizt das Wasser. Es fließt zu den Heizkörpern, zurück durch den Speicher und wieder zur Wärmepumpe. Den Speicher wärmt es unten dabei mit."},
+"Heizen aus Speicher":{wer:"Auslöser: ESP32 schaltet Zone 1 ein, Samsung lässt den Verdichter aus, weil das Wasser schon warm genug ist.",wp:"Verdichter aus",wc:"",v:"auf Heizen",sp:"am",seg:{s_vl:"warm flow",s_hkvl:"warm flow",s_hkrl:"cold flow",s_sprl:"warm flow",s_rl:"warm flow",s_bp:"warm",s_spvl:"off"},t:"Zone 1 an, der Speicher ist unten wärmer als die Heizkurve, zum Beispiel nach einer PV-Ladung: Der Verdichter bleibt aus. Die Pumpe läuft durch und bringt die Speicherwärme in die Heizkörper."},
+"Warmwasser laden":{wer:"Auslöser: Home Assistant stellt den Warmwasser-Sollwert, Samsung startet die Ladung, wenn der Speicher darunter fällt.",wp:"Verdichter an",wc:"hot",v:"auf Speicher",sp:"am",seg:{s_vl:"hot flow",s_spvl:"hot flow",s_sprl:"cold flow",s_rl:"cold flow",s_hkvl:"off",s_hkrl:"off",s_bp:"off"},t:"Der Speicher liegt etwa 5 K unter seinem Soll (Sonne 56 °C, tagsüber 51 °C, nachts 48 °C): Das Ventil stellt auf Speicher. Heißes Wasser geht oben hinein, kühles kommt unten zurück. Die Heizkörper sind solange abgekoppelt."},
+"Thermostate zu":{wer:"Auslöser: Zone 1 ist noch an (Nachlauf bis zu 10 min), obwohl die Ventile schon schließen.",wp:"Verdichter kurz an",wc:"hot",v:"auf Heizen",sp:"",seg:{s_vl:"hot flow",s_hkvl:"hot flow",s_bp:"hot flow",s_rl:"warm flow",s_hkrl:"off",s_sprl:"off",s_spvl:"off"},t:"Zone 1 ist an, aber die Ventile sind fast zu: Das Wasser nimmt den Weg über das Überströmventil, am Speicher vorbei zurück zur Pumpe. Der Mindestdurchfluss bleibt erhalten, aber die Wärmepumpe neigt hier zum Takten."},
+"Alles aus":{wer:"Auslöser: ESP32 hat Zone 1 ausgeschaltet, der Speicher liegt über der Einschaltschwelle.",wp:"aus",wc:"",v:"–",sp:"am",seg:{s_vl:"off",s_hkvl:"off",s_hkrl:"off",s_sprl:"off",s_rl:"off",s_bp:"off",s_spvl:"off"},t:"Kein Raum braucht Wärme, und der Speicher ist warm genug: Nichts fließt. Der Speicher verliert etwa 0,2 K pro Stunde."}};
 const b=document.getElementById('btns');
 function show(n){const s=S[n];for(const [id,c] of Object.entries(s.seg))document.getElementById(id).setAttribute('class','seg '+c);
 document.getElementById('wp').setAttribute('class','bx '+s.wc);document.getElementById('wpst').textContent=s.wp;
 document.getElementById('vst').textContent=s.v;document.getElementById('sp').setAttribute('class','bx '+s.sp);
-document.getElementById('cap').textContent=s.t;b.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.textContent===n));}
+document.getElementById('cap').textContent=s.t+' '+s.wer;b.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.textContent===n));}
 Object.keys(S).forEach(n=>{const x=document.createElement('button');x.textContent=n;x.onclick=()=>show(n);b.appendChild(x);});
 show("Heizen mit Wärmepumpe");
 </script>
